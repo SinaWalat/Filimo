@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StreamNest - Infinite Cinematic Experience</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- HLS for Live TV -->
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <!-- Navigation -->
+    <nav class="glass-nav">
+        <div class="nav-container">
+            <div class="logo">
+                <i class="fa-solid fa-play"></i> StreamNest
+            </div>
+            
+            <div class="nav-tabs">
+                <a href="#" class="tab-btn active" data-target="home-view">Home</a>
+                <a href="#" class="tab-btn" data-target="movies-view">Movies</a>
+                <a href="#" class="tab-btn" data-target="series-view">Series</a>
+                <a href="#" class="tab-btn" data-target="live-view">Live TV <span class="live-dot"></span></a>
+            </div>
+
+            <div class="search-container">
+                <input type="text" id="search-input" placeholder="Search...">
+                <button id="search-btn"><i class="fa-solid fa-search"></i></button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Global Hero Section -->
+    <header class="hero" id="hero-section">
+        <div class="hero-overlay"></div>
+        <img id="hero-bg" src="https://images.unsplash.com/photo-1626814026160-2237a95fc5a0?q=80&w=2070&auto=format&fit=crop" alt="Hero Background">
+        <div class="hero-content">
+            <div class="hero-text">
+                <span class="badge" id="hero-badge">🔥 Trending Now</span>
+                <h1 id="hero-title">Discover Cinematic Masterpieces</h1>
+                <p id="hero-overview">Step into a world of endless entertainment. Watch the latest blockbuster movies, TV series, and live television streams completely free.</p>
+                <div class="hero-actions">
+                    <button class="btn btn-primary" id="hero-play-btn"><i class="fa-solid fa-play"></i> Watch Now</button>
+                    <button class="btn btn-secondary"><i class="fa-solid fa-info-circle"></i> Details</button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Container via Tabs -->
+    <main class="container">
+        
+        <!-- Search Results (Global overlay) -->
+        <section id="search-section" class="movie-section hidden">
+            <h2 class="section-title">Search Results</h2>
+            <div class="movie-grid" id="search-grid"></div>
+        </section>
+
+        <!-- View: Home -->
+        <div id="home-view" class="view active">
+            <section class="movie-section">
+                <h2 class="section-title">Trending Movies</h2>
+                <div class="movie-grid" id="home-trending-movies"></div>
+            </section>
+            <section class="movie-section">
+                <h2 class="section-title">Trending Series</h2>
+                <div class="movie-grid" id="home-trending-tv"></div>
+            </section>
+        </div>
+
+        <!-- View: All Movies -->
+        <div id="movies-view" class="view">
+            <section class="movie-section">
+                <h2 class="section-title">Explore Movies</h2>
+                <div class="movie-grid" id="all-movies-grid"></div>
+                <div class="pagination">
+                    <button class="btn btn-secondary" id="movie-prev"><i class="fa-solid fa-chevron-left"></i> Prev</button>
+                    <span class="page-indicator" id="movie-page-indicator">Page 1</span>
+                    <button class="btn btn-secondary" id="movie-next">Next <i class="fa-solid fa-chevron-right"></i></button>
+                </div>
+            </section>
+        </div>
+
+        <!-- View: All Series -->
+        <div id="series-view" class="view">
+            <section class="movie-section">
+                <h2 class="section-title">Explore TV Series</h2>
+                <div class="movie-grid" id="all-tv-grid"></div>
+                <div class="pagination">
+                    <button class="btn btn-secondary" id="tv-prev"><i class="fa-solid fa-chevron-left"></i> Prev</button>
+                    <span class="page-indicator" id="tv-page-indicator">Page 1</span>
+                    <button class="btn btn-secondary" id="tv-next">Next <i class="fa-solid fa-chevron-right"></i></button>
+                </div>
+            </section>
+        </div>
+
+        <!-- View: Live TV -->
+        <div id="live-view" class="view">
+            <section class="movie-section" style="margin-top: 1rem;">
+                <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 0.5rem;">
+                    <i class="fa-solid fa-satellite-dish" style="color:var(--accent-primary); font-size: 1.5rem;"></i>
+                    <h1 style="font-size: 2rem;">Live Sports</h1>
+                </div>
+                <p style="color:var(--text-secondary); margin-bottom: 2rem;">Watch live sports events from around the world</p>
+                
+                <div class="live-filters">
+                    <div class="lf-left">
+                        <button class="lf-btn" id="filter-live"><i class="fa-solid fa-broadcast-tower"></i> Live Now</button>
+                        <button class="lf-btn" id="filter-today"><i class="fa-regular fa-calendar"></i> Today</button>
+                        <button class="lf-btn active" id="filter-all"><i class="fa-solid fa-trophy"></i> All Matches</button>
+                        <div class="custom-select" id="custom-category-select">
+                            <div class="cs-trigger" id="cs-trigger"><span id="cs-current-val">Categories</span> <i class="fa-solid fa-chevron-down" style="font-size:0.8rem;color:#666;"></i></div>
+                            <div class="cs-dropdown" id="cs-dropdown-list">
+                                <!-- Populated dynamically -->
+                            </div>
+                        </div>
+                    </div>
+                    <button class="lf-btn refresh-btn" style="border: 1px solid rgba(255,255,255,0.05); background: #111;" onclick="renderLive()"><i class="fa-solid fa-rotate-right"></i> Refresh</button>
+                </div>
+
+                <div id="live-categories-container"></div>
+            </section>
+        </div>
+        
+    </main>
+
+    <!-- Unified Player Modal -->
+    <div id="player-modal" class="modal">
+        <div class="modal-content">
+            <button id="close-modal" class="close-btn"><i class="fa-solid fa-times"></i></button>
+            <div class="iframe-container" id="video-container">
+                <!-- Video injected here (Iframe OR Native Video Tag for HLS) -->
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
