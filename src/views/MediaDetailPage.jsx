@@ -67,6 +67,20 @@ const MediaDetailPage = () => {
   const [isEpisodeDropdownOpen, setIsEpisodeDropdownOpen] = useState(false);
 
   const playerRef = useRef(null);
+  const dropdownRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsSeasonDropdownOpen(false);
+        setIsEpisodeDropdownOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   // Helper: Fetch Stream URL through Proxies
   const fetchStreamUrl = async (source, id) => {
@@ -638,46 +652,12 @@ const MediaDetailPage = () => {
               <div className="player-header-left">
               </div>
               <div className="player-header-right">
-                {isTV && (
-                  <>
-                    <span className="episodes-label">Episodes</span>
-                    <div
-                      className="sx-custom-dropdown-container"
-                      onClick={() => setIsSeasonDropdownOpen(!isSeasonDropdownOpen)}
-                    >
-                      <span className="sx-current-label">
-                        Season {selectedSeason}
-                      </span>
-                      <i
-                        className={`fa-solid fa-chevron-down ${isSeasonDropdownOpen ? "open" : ""}`}
-                      ></i>
-                      {isSeasonDropdownOpen && (
-                        <div className="sx-custom-dropdown">
-                          {seasons
-                            .filter((s) => s.season_number > 0)
-                            .map((s) => (
-                              <div
-                                key={s.id}
-                                className={`sx-dropdown-item ${selectedSeason === s.season_number ? "active" : ""}`}
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  setSelectedSeason(s.season_number);
-                                  setIsSeasonDropdownOpen(false);
-                                }}
-                              >
-                                Season {s.season_number}
-                              </div>
-                            ))}
-                        </div>
-                      )}
-                    </div>
-                  </>
-                )}
+                {/* Season selector moved to episodes overlay inside tabs */}
                 {/* Removed search and close icons per user request */}
               </div>
             </div>
 
-            <div className="player-layout-main">
+            <div className="player-layout-main" style={!isTV ? { paddingTop: 0 } : { paddingTop: "80px" }}>
               <div
                 className={`sx-player-wrapper fullscreen ${!isTV ? 'is-movie' : ''} ${loading ? "skeleton-glow" : ""}`}
               >
@@ -703,6 +683,7 @@ const MediaDetailPage = () => {
                         allow="autoplay; fullscreen; encrypted-media"
                         referrerPolicy="no-referrer"
                         title="Player"
+                        sandbox="allow-same-origin allow-scripts allow-presentation"
                       ></iframe>
                     )}
                     {/* BOTTOM LEFT INFO OVERLAY REMOVED AS IT WAS COVERING THE VIDEO */}
@@ -712,6 +693,66 @@ const MediaDetailPage = () => {
 
               {isTV && (
                 <div className="series-episodes-overlay right-sidebar">
+                  <div className="sx-dropdown-row" ref={dropdownRef}>
+                    <div className="sx-custom-dropdown-container sx-full-dropdown" onClick={() => { setIsSeasonDropdownOpen(!isSeasonDropdownOpen); setIsEpisodeDropdownOpen(false); }}>
+                      <div className="sx-dropdown-btn">
+                        <span>Season {selectedSeason}</span>
+                        <i className={`fa-solid fa-chevron-down ${isSeasonDropdownOpen ? 'open' : ''}`}></i>
+                      </div>
+                      {isSeasonDropdownOpen && (
+                        <div className="sx-dropdown-menu">
+                          {seasons.filter((s) => s.season_number > 0).map((s) => (
+                            <div
+                              key={s.id}
+                              className={`sx-dropdown-item ${selectedSeason === s.season_number ? 'active' : ''}`}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setSelectedSeason(s.season_number);
+                                setIsSeasonDropdownOpen(false);
+                              }}
+                            >
+                              <span className="sx-dropdown-check">
+                                {selectedSeason === s.season_number && <i className="fa-solid fa-check"></i>}
+                              </span>
+                              <span>Season {s.season_number}</span>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="sx-custom-dropdown-container sx-full-dropdown" onClick={() => { setIsEpisodeDropdownOpen(!isEpisodeDropdownOpen); setIsSeasonDropdownOpen(false); }}>
+                      <div className="sx-dropdown-btn">
+                        <span>Episode {selectedEpisode}</span>
+                        <i className={`fa-solid fa-chevron-down ${isEpisodeDropdownOpen ? 'open' : ''}`}></i>
+                      </div>
+                      {isEpisodeDropdownOpen && (
+                        <div className="sx-dropdown-menu">
+                          {episodesLoading ? (
+                            <div className="sx-dropdown-item">Loading...</div>
+                          ) : (
+                            episodesList.map((ep) => (
+                              <div
+                                key={ep.id}
+                                className={`sx-dropdown-item ${selectedEpisode === ep.episode_number ? 'active' : ''}`}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleEpisodeSelect(ep);
+                                  setIsEpisodeDropdownOpen(false);
+                                }}
+                              >
+                                <span className="sx-dropdown-check">
+                                  {selectedEpisode === ep.episode_number && <i className="fa-solid fa-check"></i>}
+                                </span>
+                                <span>Episode {ep.episode_number}</span>
+                              </div>
+                            ))
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
                   <div className="sx-episodes-list rich-cards">
                     {episodesLoading ? (
                       <div className="sx-loading">Loading episodes...</div>
@@ -749,9 +790,6 @@ const MediaDetailPage = () => {
                               E{ep.episode_number}
                             </span>
                             <h3 className="ep-title">{ep.name}</h3>
-                            <p className="ep-desc">
-                              {ep.overview || "No description available."}
-                            </p>
                             {selectedEpisode === ep.episode_number && (
                               <div className="ep-progress-bar">
                                 <div className="progress-fill"></div>

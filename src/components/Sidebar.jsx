@@ -40,7 +40,6 @@ const TopNav = ({ isOpen, onClose }) => {
     { key: "movie", label: "Movie", icon: "fa-solid fa-film" },
     { key: "tv", label: "TV", icon: "fa-solid fa-tv" },
     { key: "anime", label: "Anime", icon: "fa-solid fa-wand-magic-sparkles" },
-    { key: "manga", label: "Manga", icon: "fa-solid fa-book" },
     { key: "recent", label: "Recent", icon: "fa-solid fa-clock-rotate-left" },
   ];
 
@@ -163,9 +162,6 @@ const TopNav = ({ isOpen, onClose }) => {
                 value={searchVal}
                 onChange={(e) => setSearchVal(e.target.value)}
               />
-              <button type="button" className="search-modal-filter-btn">
-                <i className="fa-solid fa-sliders"></i>
-              </button>
             </form>
 
             <div className="search-modal-tabs">
