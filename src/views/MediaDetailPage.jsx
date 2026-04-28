@@ -15,18 +15,18 @@ const TVMAZE_API_KEY = "WsUNbq0HtsLXW2o1l6_hFqaUKFpz8hJN";
 
 const MOVIE_SERVERS = [
   {
-    id: "vidsrccc",
-    name: "VidSrc CC (Ad-Free)",
-    getUrl: (id) => `https://vidsrc.cc/v2/embed/movie/${id}?autoPlay=false`,
+    id: "vidlink",
+    name: "VidLink (HD)",
+    getUrl: (id) => `https://vidlink.pro/movie/${id}?autoplay=false`,
   },
 ];
 
 const TV_SERVERS = [
   {
-    id: "vidsrccc",
-    name: "VidSrc CC (Ad-Free)",
+    id: "vidlink",
+    name: "VidLink (HD)",
     getUrl: (id, s, e) =>
-      `https://vidsrc.cc/v2/embed/tv/${id}/${s}/${e}?autoPlay=false`,
+      `https://vidlink.pro/tv/${id}/${s}/${e}?autoplay=false`,
   },
 ];
 
@@ -683,7 +683,6 @@ const MediaDetailPage = () => {
                         allow="autoplay; fullscreen; encrypted-media"
                         referrerPolicy="no-referrer"
                         title="Player"
-                        sandbox="allow-same-origin allow-scripts allow-presentation"
                       ></iframe>
                     )}
                     {/* BOTTOM LEFT INFO OVERLAY REMOVED AS IT WAS COVERING THE VIDEO */}
